@@ -2,22 +2,22 @@
 # SyncForge — Render Blueprint Infrastructure as Code (render.yaml)
 # ==============================================================================
 # Deploys:
-#   1. syncforge-backend: Node.js 20 Web Service (Express + WSS Server + PostgreSQL)
-#   2. syncforge-frontend: Static Site (Vite Single Page Application with SPA routing)
+#   1. syncforge-backend: Node.js 20 Web Service (Express API + CRDT WSS Gateway + React Client)
+#   2. syncforge-frontend: Static Site (CDN-distributed Vite React Client with SPA routing)
 #   3. syncforge-postgres: Managed PostgreSQL 16 Database
 # ==============================================================================
 
 services:
   # ----------------------------------------------------------------------------
-  # 1. BACKEND WEB SERVICE (HTTP REST API + Binary WebSocket Gateway)
+  # 1. BACKEND WEB SERVICE (Unified API + Binary WebSocket Gateway + SPA)
   # ----------------------------------------------------------------------------
   - type: web
     name: syncforge-backend
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm install && npm run build --workspace=@syncforge/shared && npm run build --workspace=@syncforge/server
-    startCommand: npm run start --workspace=@syncforge/server
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -27,10 +27,7 @@ services:
       - key: PORT
         value: 10000
       - key: CORS_ORIGIN
-        fromService:
-          type: web
-          name: syncforge-frontend
-          property: host
+        value: "*"
       - key: DATABASE_URL
         fromDatabase:
           name: syncforge-postgres
@@ -41,12 +38,12 @@ services:
         value: 50
 
   # ----------------------------------------------------------------------------
-  # 2. FRONTEND STATIC SITE (Vite React Client + Nginx / CDN Distribution)
+  # 2. FRONTEND STATIC SITE (Vite React Client + Global CDN Distribution)
   # ----------------------------------------------------------------------------
   - type: static
     name: syncforge-frontend
-    buildCommand: npm install && npm run build --workspace=@syncforge/shared && npm run build --workspace=@syncforge/client
-    staticPublishPath: packages/client/dist
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./packages/client/dist
     routes:
       - type: rewrite
         source: /*

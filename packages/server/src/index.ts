@@ -1,4 +1,6 @@
 import http from 'http';
+import path from 'path';
+import fs from 'fs';
 import express from 'express';
 import cors from 'cors';
 import { WebSocketServer } from 'ws';
@@ -8,6 +10,22 @@ import { docsRouter } from './routes/docs';
 import { createHealthRouter } from './routes/health';
 import { WsSyncServer } from './sync/WsSyncServer';
 import { securityHeadersMiddleware, createRateLimiter } from './middleware/security';
+
+function getClientDistPath(): string | null {
+  const candidatePaths = [
+    path.resolve(process.cwd(), 'packages/client/dist'),
+    path.resolve(process.cwd(), '../client/dist'),
+    path.resolve(__dirname, '../../client/dist'),
+    path.resolve(__dirname, '../../../client/dist'),
+    path.resolve(process.cwd(), 'dist'),
+  ];
+  for (const p of candidatePaths) {
+    if (fs.existsSync(path.join(p, 'index.html'))) {
+      return p;
+    }
+  }
+  return null;
+}
 
 async function bootstrap() {
   console.log('---------------------------------------------------------');
@@ -19,11 +37,18 @@ async function bootstrap() {
 
   const app = express();
 
-  // Parse CORS origins (support wildcard in dev or comma-separated list in production)
+  // Parse CORS origins (support wildcard, onrender.com subdomains, or comma-separated list)
   const allowedOrigins = config.corsOrigin.split(',').map((o) => o.trim());
   const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
-      if (!origin || config.corsOrigin === '*' || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      if (
+        !origin ||
+        config.corsOrigin === '*' ||
+        allowedOrigins.includes(origin) ||
+        allowedOrigins.includes('*') ||
+        origin.endsWith('.onrender.com') ||
+        origin.includes('onrender.com')
+      ) {
         callback(null, true);
       } else {
         callback(null, false);
@@ -62,17 +87,30 @@ async function bootstrap() {
   // Mount Document API endpoints
   app.use('/api/docs', docsRouter);
 
-  // Root endpoint
-  app.get('/', (req, res) => {
-    res.json({
-      name: 'SyncForge Server',
-      version: '1.0.0',
-      description: 'Real-time CRDT collaborative document editing server',
-      wsEndpoint: `ws://${req.headers.host || 'localhost:' + config.port}/ws/:docId`,
-      docsApi: '/api/docs',
-      health: '/health',
+  // Serve static production React client if dist exists
+  const clientDist = getClientDistPath();
+  if (clientDist) {
+    console.log(`[SyncForge Server] Serving static production frontend from: ${clientDist}`);
+    app.use(express.static(clientDist));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api') || req.path.startsWith('/health') || req.path.startsWith('/ws')) {
+        return next();
+      }
+      res.sendFile(path.join(clientDist, 'index.html'));
     });
-  });
+  } else {
+    // Root endpoint fallback in dev/headless
+    app.get('/', (req, res) => {
+      res.json({
+        name: 'SyncForge Server',
+        version: '1.0.0',
+        description: 'Real-time CRDT collaborative document editing server',
+        wsEndpoint: `ws://${req.headers.host || 'localhost:' + config.port}/ws/:docId`,
+        docsApi: '/api/docs',
+        health: '/health',
+      });
+    });
+  }
 
   server.listen(config.port, config.host, () => {
     console.log(`[SyncForge Server] HTTP & WebSocket server listening on http://${config.host}:${config.port}`);
