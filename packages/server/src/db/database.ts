@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import sqlite3 from 'sqlite3';
-import { config } from '../config';
+import { config } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 

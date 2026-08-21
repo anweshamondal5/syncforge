@@ -1,4 +1,4 @@
-import { getDb } from './database';
+import { getDb } from './database.js';
 import { DocumentMetadata } from '@syncforge/shared';
 import * as Y from 'yjs';
 

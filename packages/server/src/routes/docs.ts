@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { DocumentRepository } from '../db/repository';
-import { DocManager } from '../sync/DocManager';
+import { DocumentRepository } from '../db/repository.js';
+import { DocManager } from '../sync/DocManager.js';
 import { ApiResponse, DocumentMetadata } from '@syncforge/shared';
-import { isValidDocId, sanitizeString, createRateLimiter } from '../middleware/security';
+import { isValidDocId, sanitizeString, createRateLimiter } from '../middleware/security.js';
 import * as Y from 'yjs';
 
 export const docsRouter = Router();

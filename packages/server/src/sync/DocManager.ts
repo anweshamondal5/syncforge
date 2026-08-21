@@ -1,6 +1,6 @@
 import * as Y from 'yjs';
-import { DocumentRepository } from '../db/repository';
-import { config } from '../config';
+import { DocumentRepository } from '../db/repository.js';
+import { config } from '../config.js';
 
 interface ManagedDoc {
   doc: Y.Doc;

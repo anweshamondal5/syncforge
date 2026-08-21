@@ -4,12 +4,12 @@ import fs from 'fs';
 import express from 'express';
 import cors from 'cors';
 import { WebSocketServer } from 'ws';
-import { config } from './config';
-import { getDb } from './db/database';
-import { docsRouter } from './routes/docs';
-import { createHealthRouter } from './routes/health';
-import { WsSyncServer } from './sync/WsSyncServer';
-import { securityHeadersMiddleware, createRateLimiter } from './middleware/security';
+import { config } from './config.js';
+import { getDb } from './db/database.js';
+import { docsRouter } from './routes/docs.js';
+import { createHealthRouter } from './routes/health.js';
+import { WsSyncServer } from './sync/WsSyncServer.js';
+import { securityHeadersMiddleware, createRateLimiter } from './middleware/security.js';
 
 import { fileURLToPath } from 'url';
 

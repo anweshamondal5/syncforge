@@ -5,8 +5,8 @@ import * as syncProtocol from 'y-protocols/sync';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as encoding from 'lib0/encoding';
 import * as decoding from 'lib0/decoding';
-import { DocManager } from './DocManager';
-import { isValidDocId } from '../middleware/security';
+import { DocManager } from './DocManager.js';
+import { isValidDocId } from '../middleware/security.js';
 import {
   MESSAGE_SYNC,
   MESSAGE_AWARENESS,
