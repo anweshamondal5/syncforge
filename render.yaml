@@ -2,14 +2,14 @@
 # SyncForge — Render Blueprint Infrastructure as Code (render.yaml)
 # ==============================================================================
 # Deploys:
-#   1. syncforge-backend: Node.js 20 Web Service (Express API + CRDT WSS Gateway + React Client)
+#   1. syncforge-backend: Node.js 20 Web Service (Express API + CRDT WSS Gateway)
 #   2. syncforge-frontend: Static Site (CDN-distributed Vite React Client with SPA routing)
 #   3. syncforge-postgres: Managed PostgreSQL 16 Database
 # ==============================================================================
 
 services:
   # ----------------------------------------------------------------------------
-  # 1. BACKEND WEB SERVICE (Unified API + Binary WebSocket Gateway + SPA)
+  # 1. BACKEND WEB SERVICE (HTTP REST API + Binary WebSocket Gateway)
   # ----------------------------------------------------------------------------
   - type: web
     name: syncforge-backend
@@ -27,7 +27,7 @@ services:
       - key: PORT
         value: 10000
       - key: CORS_ORIGIN
-        value: "*"
+        value: "https://syncforge-frontend.onrender.com"
       - key: DATABASE_URL
         fromDatabase:
           name: syncforge-postgres
@@ -40,7 +40,8 @@ services:
   # ----------------------------------------------------------------------------
   # 2. FRONTEND STATIC SITE (Vite React Client + Global CDN Distribution)
   # ----------------------------------------------------------------------------
-  - type: static
+  - type: web
+    runtime: static
     name: syncforge-frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./packages/client/dist

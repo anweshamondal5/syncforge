@@ -11,6 +11,11 @@ import { createHealthRouter } from './routes/health';
 import { WsSyncServer } from './sync/WsSyncServer';
 import { securityHeadersMiddleware, createRateLimiter } from './middleware/security';
 
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 function getClientDistPath(): string | null {
   const candidatePaths = [
     path.resolve(process.cwd(), 'packages/client/dist'),
@@ -37,7 +42,7 @@ async function bootstrap() {
 
   const app = express();
 
-  // Parse CORS origins (support wildcard, onrender.com subdomains, or comma-separated list)
+  // Parse CORS origins (support production origin, wildcard, onrender.com subdomains, and localhost)
   const allowedOrigins = config.corsOrigin.split(',').map((o) => o.trim());
   const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
@@ -46,6 +51,9 @@ async function bootstrap() {
         config.corsOrigin === '*' ||
         allowedOrigins.includes(origin) ||
         allowedOrigins.includes('*') ||
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:') ||
+        origin === 'https://syncforge-frontend.onrender.com' ||
         origin.endsWith('.onrender.com') ||
         origin.includes('onrender.com')
       ) {
