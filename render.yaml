@@ -1,0 +1,75 @@
+# ==============================================================================
+# SyncForge — Render Blueprint Infrastructure as Code (render.yaml)
+# ==============================================================================
+# Deploys:
+#   1. syncforge-backend: Node.js 20 Web Service (Express + WSS Server + PostgreSQL)
+#   2. syncforge-frontend: Static Site (Vite Single Page Application with SPA routing)
+#   3. syncforge-postgres: Managed PostgreSQL 16 Database
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. BACKEND WEB SERVICE (HTTP REST API + Binary WebSocket Gateway)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: syncforge-backend
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build --workspace=@syncforge/shared && npm run build --workspace=@syncforge/server
+    startCommand: npm run start --workspace=@syncforge/server
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        fromService:
+          type: web
+          name: syncforge-frontend
+          property: host
+      - key: DATABASE_URL
+        fromDatabase:
+          name: syncforge-postgres
+          property: connectionString
+      - key: DOC_SAVE_DEBOUNCE_MS
+        value: 2000
+      - key: DOC_SNAPSHOT_THRESHOLD
+        value: 50
+
+  # ----------------------------------------------------------------------------
+  # 2. FRONTEND STATIC SITE (Vite React Client + Nginx / CDN Distribution)
+  # ----------------------------------------------------------------------------
+  - type: static
+    name: syncforge-frontend
+    buildCommand: npm install && npm run build --workspace=@syncforge/shared && npm run build --workspace=@syncforge/client
+    staticPublishPath: packages/client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: syncforge-backend
+          property: url
+      - key: VITE_WS_URL
+        fromService:
+          type: web
+          name: syncforge-backend
+          property: url
+
+databases:
+  # ----------------------------------------------------------------------------
+  # 3. MANAGED POSTGRESQL DATABASE
+  # ----------------------------------------------------------------------------
+  - name: syncforge-postgres
+    plan: free
+    region: oregon
+    databaseName: syncforge_prod
+    user: syncforge_admin
+    postgresMajorVersion: 16

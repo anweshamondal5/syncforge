@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: syncforge_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-syncforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-syncforge_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-syncforge_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - syncforge_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-syncforge} -d ${POSTGRES_DB:-syncforge_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. SyncForge Real-Time CRDT Backend Server
+  server:
+    build:
+      context: .
+      dockerfile: packages/server/Dockerfile
+    container_name: syncforge_server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-syncforge}:${POSTGRES_PASSWORD:-syncforge_secret}@postgres:5432/${POSTGRES_DB:-syncforge_db}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      MAX_PAYLOAD_BYTES: 5242880
+      RATE_LIMIT_MSGS_PER_SEC: 300
+    ports:
+      - "${SERVER_PORT:-4000}:4000"
+
+  # 3. SyncForge Client Web Application (Nginx SPA + WebSocket Reverse Proxy)
+  client:
+    build:
+      context: .
+      dockerfile: packages/client/Dockerfile
+    container_name: syncforge_client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "${CLIENT_PORT:-3000}:80"
+
+volumes:
+  syncforge_pgdata:
+    driver: local

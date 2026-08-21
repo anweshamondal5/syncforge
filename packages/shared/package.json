@@ -1,0 +1,28 @@
+{
+  "name": "@syncforge/shared",
+  "version": "1.0.0",
+  "description": "Shared types and protocol definitions for SyncForge",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "lib0": "^0.2.98",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.23"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

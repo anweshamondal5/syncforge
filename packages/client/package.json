@@ -1,0 +1,51 @@
+{
+  "name": "@syncforge/client",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@syncforge/shared": "file:../shared",
+    "@tiptap/extension-bold": "^2.4.0",
+    "@tiptap/extension-collaboration": "^2.4.0",
+    "@tiptap/extension-collaboration-cursor": "^2.4.0",
+    "@tiptap/extension-heading": "^2.4.0",
+    "@tiptap/extension-history": "^2.4.0",
+    "@tiptap/extension-italic": "^2.4.0",
+    "@tiptap/extension-link": "^2.4.0",
+    "@tiptap/extension-paragraph": "^2.4.0",
+    "@tiptap/extension-strike": "^2.4.0",
+    "@tiptap/extension-underline": "^2.4.0",
+    "@tiptap/pm": "^2.4.0",
+    "@tiptap/react": "^2.4.0",
+    "@tiptap/starter-kit": "^2.4.0",
+    "clsx": "^2.1.1",
+    "lib0": "^0.2.98",
+    "lucide-react": "^0.379.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.3.0",
+    "y-indexeddb": "^9.0.12",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.23"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
+    "jsdom": "^30.0.1",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vitest": "^4.1.11"
+  }
+}
