@@ -11,7 +11,7 @@
     "dev": "npm run dev --workspace=packages/server & npm run dev --workspace=packages/client",
     "dev:server": "npm run dev --workspace=packages/server",
     "dev:client": "npm run dev --workspace=packages/client",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build:shared && npm run build:server && npm run build:client",
     "build:shared": "npm run build --workspace=packages/shared",
     "build:server": "npm run build --workspace=packages/server",
     "build:client": "npm run build --workspace=packages/client",

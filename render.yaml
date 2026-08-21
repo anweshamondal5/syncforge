@@ -16,7 +16,7 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build:shared && npm run build:server
     startCommand: npm run start
     healthCheckPath: /health
     envVars:
@@ -43,7 +43,7 @@ services:
   - type: web
     runtime: static
     name: syncforge-frontend
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build:shared && npm run build:client
     staticPublishPath: ./packages/client/dist
     routes:
       - type: rewrite
@@ -51,9 +51,9 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://syncforge-backend.onrender.com
+        value: https://syncforge-backend-nspd.onrender.com
       - key: VITE_WS_URL
-        value: wss://syncforge-backend.onrender.com
+        value: wss://syncforge-backend-nspd.onrender.com
 
 databases:
   # ----------------------------------------------------------------------------

@@ -9,7 +9,7 @@ This guide provides instructions to build, test, and deploy **SyncForge** across
 SyncForge includes a unified `render.yaml` blueprint defining:
 1. **`syncforge-backend`**: Node.js 20 Web Service on `0.0.0.0:$PORT` with WSS support and `/health` health check.
 2. **`syncforge-frontend`**: High-performance Static Site with SPA routing rewrite (`/* -> /index.html`).
-3. **`syncforge-postgres`**: Managed PostgreSQL 16 database.
+3. **`syncforge_postgres`**: Managed PostgreSQL 16 database.
 
 ### Step-by-Step Render Deployment:
 1. Push your repository to GitHub.
@@ -18,8 +18,8 @@ SyncForge includes a unified `render.yaml` blueprint defining:
 4. Render will automatically detect `render.yaml` and provision the Web Service, Static Site, and PostgreSQL database with wired environment variables.
 5. Once deployed, verify your public URLs:
    - Frontend: `https://syncforge-frontend.onrender.com`
-   - Backend API & Health: `https://syncforge-backend.onrender.com/health`
-   - WebSocket Gateway: `wss://syncforge-backend.onrender.com/ws/:docId`
+   - Backend API & Health: `https://syncforge-backend-nspd.onrender.com/health`
+   - WebSocket Gateway: `wss://syncforge-backend-nspd.onrender.com/ws/:docId`
 
 ---
 
