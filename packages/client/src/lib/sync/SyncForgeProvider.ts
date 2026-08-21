@@ -56,6 +56,7 @@ export class SyncForgeProvider {
       let baseWs = import.meta.env.VITE_WS_URL.replace(/\/$/, '');
       if (baseWs.startsWith('http://')) baseWs = baseWs.replace('http://', 'ws://');
       if (baseWs.startsWith('https://')) baseWs = baseWs.replace('https://', 'wss://');
+      if (baseWs.endsWith('/ws')) baseWs = baseWs.slice(0, -3);
       this.wsUrl = `${baseWs}/ws/${docId}`;
     } else {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';

@@ -1,7 +1,11 @@
 import { DocumentMetadata, ApiResponse } from '@syncforge/shared';
 
-const API_BASE = import.meta.env.VITE_API_URL
+const rawApiUrl = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
+  : '';
+
+const API_BASE = rawApiUrl
+  ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`)
   : '/api';
 
 export async function fetchDocuments(): Promise<DocumentMetadata[]> {
